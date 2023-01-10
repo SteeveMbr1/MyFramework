@@ -1,0 +1,19 @@
+{
+    "name": "steeve/my-framework",
+    "description": "The purpose of this project is to show my understanding of the basic principles of PHP mvc frameworks such as Laravel. I was inspired by various tutorials like those from Grafikart and Nord Coders.",
+    "require-dev": {
+        "phpunit/phpunit": "^9.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "MyFramework\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "SteeveMbr1",
+            "email": "steeve.mombrun@outlook.com"
+        }
+    ],
+    "require": {}
+}
