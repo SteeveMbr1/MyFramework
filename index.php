@@ -4,7 +4,7 @@ use MyFramework\Controller\Controller;
 use MyFramework\Http\Cookie;
 use MyFramework\Http\Request;
 use MyFramework\Http\Response;
-use MyFramework\Router\Route;
+use MyFramework\Router\Router;
 use MyFramework\Template\View;
 
 require_once 'vendor/autoload.php';
@@ -16,11 +16,17 @@ $request = new Request();
 
 // echo $response->send();
 
-Route::add('GET', '/', function () {
+Router::add('GET', '/', function () {
     return new View('home');
 });
 
-Route::add('GET', '/contact', [Controller::class, 'index']);
-Route::add('POST', '/contact', [Controller::class, 'store']);
+Router::add('GET', '/contact', [Controller::class, 'index']);
+Router::add('POST', '/contact/{id}', [Controller::class, 'store'], null, 'contact.store');
 
-Route::dumpRoutes();
+Router::add('GET', '/articles/{id}-{slug}', [Controller::class, 'show'], null, 'article.show');
+
+Router::dumpRoutes();
+
+$route = Router::generate('article.show', ['id' => 14, 'slug' => 'bonjour-les-amis']);
+
+var_dump($route);
