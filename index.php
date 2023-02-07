@@ -1,11 +1,12 @@
 <?php
 
 use MyFramework\Controller\Controller;
-use MyFramework\Http\Cookie;
 use MyFramework\Http\Request;
 use MyFramework\Http\Response;
 use MyFramework\Router\Router;
 use MyFramework\Template\View;
+
+use function MyFramework\Template\View;
 
 require_once 'vendor/autoload.php';
 
@@ -14,10 +15,10 @@ $view = new View('home', ['name' => 'toto']);
 $response = new Response($view);
 $request = new Request();
 
-// echo $response->send();
-
+echo $response->send();
+die;
 Router::add('GET', '/', function () {
-    return new View('home');
+    return View('home');
 });
 
 Router::add('GET', '/contact', [Controller::class, 'index']);

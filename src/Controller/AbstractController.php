@@ -2,13 +2,13 @@
 
 namespace MyFramework\Controller;
 
-use MyFramework\Template\View;
+use function MyFramework\Template\View;
 
 abstract class AbstractController
 {
 
     public function render(string $name, array $datas)
     {
-        return new View($name, $datas);
+        return View($name, $datas);
     }
 }
