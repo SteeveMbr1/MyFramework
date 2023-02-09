@@ -8,7 +8,7 @@ class Response
      * 
      * @var MyFramework\Http\Cookie[]
      */
-    protected array $cookies;
+    protected array $cookies = [];
 
     public function __construct(
         protected string $content,

@@ -8,15 +8,10 @@ use MyFramework\Template\View;
 
 use function MyFramework\Template\View;
 
-require_once 'vendor/autoload.php';
+define('__BASE_PATH__', __DIR__);
+define('__VIEWS_PATH__', __BASE_PATH__ . DIRECTORY_SEPARATOR . 'views');
 
 
-$view = new View('home', ['name' => 'toto']);
-$response = new Response($view);
-$request = new Request();
-
-echo $response->send();
-die;
 Router::add('GET', '/', function () {
     return View('home');
 });

@@ -1,3 +1,5 @@
 vendor/
 views/
+public/
+.vscode
 .phpunit.result.cache

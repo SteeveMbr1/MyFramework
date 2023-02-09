@@ -5,14 +5,13 @@ namespace MyFramework\Template;
 class View
 {
     private ?string $capturing = null;
-    private array $captures = [];
 
     public function __construct(
         protected string  $name,
         protected ?array  $datas = null,
         protected ?array  $blocks = null,
         protected ?string $extend = null,
-        protected string  $folder = 'views'
+        protected string  $folder = __VIEWS_PATH__,
     ) {
     }
 
@@ -21,9 +20,9 @@ class View
         $this->datas && extract($this->datas);
         ob_start();
         require_once($this->pathResolver($this->name));
-        $view = ob_get_clean();
+        $view = trim(ob_get_clean());
         if ($this->extend) {
-            return new View($this->extend, $this->captures);
+            return new View($this->extend, $this->datas, $this->blocks);
         }
         return $view;
     }
@@ -33,11 +32,6 @@ class View
         $path = str_replace('.', DIRECTORY_SEPARATOR, $name);
         $path = $this->folder . DIRECTORY_SEPARATOR . $path . '.html.php';
 
-        // var_dump(__DIR__);
-        // var_dump($path);
-        // var_dump(realpath($path));
-        // var_dump(file_exists($path));
-        // die;
         if (!file_exists($path))
             throw new \Exception("The view $name was not found in $path\n", 1);
         return $path;
@@ -49,8 +43,8 @@ class View
             $this->blocks[$name] = '';
             $this->capturing = $name;
             ob_start();
-        }
-        echo $this->blocks[$name];
+        } else
+            echo $this->blocks[$name];
     }
 
     private function endblock(): void
@@ -79,9 +73,9 @@ class View
         return null;
     }
 
-    private function include(string $view): static
+    private function include(string $view): void
     {
-        return new static($view);
+        echo (new static($view));
     }
 
     public function __toString()
