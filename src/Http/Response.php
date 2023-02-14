@@ -11,7 +11,7 @@ class Response
     protected array $cookies = [];
 
     public function __construct(
-        protected string $content,
+        protected string $body = '',
         protected ?array $headers = null,
         protected int $status_code = 200,
     ) {
@@ -34,23 +34,23 @@ class Response
         }
         http_response_code($this->status_code);
 
-        echo $this->content;
+        echo $this->body;
     }
 
     /**
-     * Get the value of content
+     * Get the value of body
      */
-    public function getContent()
+    public function getBody()
     {
-        return $this->content;
+        return $this->body;
     }
 
     /**
-     * Set the value of content
+     * Set the value of body
      */
-    public function setContent($content): self
+    public function setBody($body): self
     {
-        $this->content = $content;
+        $this->body = $body;
 
         return $this;
     }

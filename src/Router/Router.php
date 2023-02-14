@@ -2,57 +2,117 @@
 
 namespace MyFramework\Router;
 
+use MyFramework\Router\Route;
+use MyFramework\Http\Request;
+use MyFramework\Http\Response;
+
 class Router
 {
-
-    //TODO: 
-    protected static array $routes;
+    /**
+     * 
+     * @var Route[][]
+     */
+    protected array $routes;
 
     /**
      * 
      * @param string $method 
      * @param string $path 
-     * @param string|array $target 
-     * @param (null|array)|null $args 
-     * @param string $name 
-     * @return mixed 
+     * @param callable|array|string $action 
+     * @param null|string $name 
+     * @return void 
      */
-    public static function add(string $method, string $path, callable|string|array $target, ?array $args = null, ?string $name = null): static
+    protected function add(string $method, string $path, callable|array|string $action, ?string $name = null): void
     {
-        $name = $name ?? ($method . $path);
-        self::$routes[$method][$name] = compact('method', 'name', 'path', 'target', 'args');
-        return new static;
+        $name = $name ?? ($method . '.' . $path);
+        $this->routes[$method][] = new Route($path, $action, $name);
     }
 
-    public static function dumpRoutes()
+    /**
+     * 
+     * @param string $path 
+     * @param callable|array $action 
+     * @param null|string $name 
+     * @return Router 
+     */
+    public function get(string $path, callable|array $action, ?string $name = null): self
     {
-        print_r(self::$routes);
+        $this->add('GET', $path, $action, $name);
+        return $this;
     }
 
-    public static function getNamed(string $name): array|null
+    /**
+     * 
+     * @param string $path 
+     * @param callable|array $action 
+     * @param null|string $name 
+     * @return Router 
+     */
+    public function post(string $path, callable|array $action, ?string $name = null): self
     {
-        foreach (self::$routes as $routes) {
-            if (array_key_exists($name, $routes))
-                return $routes[$name];
+        $this->add('POST', $path, $action, $name);
+        return $this;
+    }
+
+    /**
+     * 
+     * @param string $method 
+     * @param string $uri 
+     * @return null|Route 
+     */
+    protected function match(string $method, string $uri): ?Route
+    {
+        foreach ($this->routes[$method] as $route) {
+            if ($route->isMatch($uri))
+                return $route;
         }
         return null;
     }
 
-    public static function generate(string $name, ?array $args = null): string|null
+    /**
+     * 
+     * @param Request $request 
+     * @param Response $response 
+     * @return Response 
+     */
+    public function handle(Request &$request): Response
     {
-        if (($route = static::getNamed($name)) == null) {
-            return null;
-        }
-        $path = $route['path'];
-        if ($args != null)
-            foreach ($args as $key => $value) {
-                $path = str_replace("{{$key}}", $value, $path);
-            }
-        return $path;
+        $method = $request->getMethod();
+        $uri = $request->getURI();
+
+        $route = $this->match($method, $uri);
+        if (!$route)
+            return (new Response())->setStatusCode(404)
+                ->setBody("<body><h1>Page not found :(</h1></body>");
+
+        return $route->execute($request);
     }
 
-    public static function match(string $request): array|null
+    /**
+     * Return the route named `$name`
+     * @param string $name
+     * @return Route or Null if not found
+     */
+    public function getRoute(string $name)
     {
-        //TODO
+        foreach ($this->routes as $routes) {
+            foreach ($routes as $route) {
+                if ($name == $route->getName())
+                    return $route;
+            }
+        }
+        return null;
+    }
+
+
+    /**
+     * Generate the url for the route named `$name`
+     * @param $name, the route name
+     * @param $args, the argument needed by the method controller
+     * @return string, the url
+     */
+    public function path(string $name, array $args = [])
+    {
+        // TODO :
     }
 }

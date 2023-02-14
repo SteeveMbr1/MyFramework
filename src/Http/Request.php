@@ -5,30 +5,24 @@ namespace MyFramework\Http;
 class Request
 {
 
-    protected static ?array $vars = null;
+    protected ?array $vars = null;
 
     public function __construct()
     {
-        self::init();
+        $this->vars = array_merge($_SERVER, $_REQUEST, $_COOKIE);
     }
 
-    public static function init(): void
+    public function get(string $name): mixed
     {
-        if (!self::$vars)
-            self::$vars = array_merge($_SERVER, $_REQUEST, $_COOKIE);
-    }
-
-    public function __get(string $name)
-    {
-        return self::get($name);
-    }
-
-    public static function get(string $name)
-    {
-        self::init();
-        if (isset(self::$vars[$name]))
-            return self::$vars[$name];
+        if (isset($this->vars[$name]))
+            return $this->vars[$name];
         return null;
+    }
+
+    public function set(string $name, mixed $value): self
+    {
+        $this->vars[$name] = $value;
+        return $this;
     }
 
     public function getCookie(string $name = null)
@@ -37,5 +31,15 @@ class Request
             return $_COOKIE[$name];
         }
         return null;
+    }
+
+    public function getMethod(): string
+    {
+        return $this->get('REQUEST_METHOD');
+    }
+
+    public function getURI(): string
+    {
+        return $this->get('REQUEST_URI');
     }
 }
